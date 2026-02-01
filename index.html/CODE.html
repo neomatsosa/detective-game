@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Detective Game – The Missing Diamond</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #121212;
+    color: #eee;
+}
+
+.screen {
+    display: none;
+    padding: 30px;
+}
+
+.active {
+    display: block;
+}
+
+button {
+    padding: 12px 18px;
+    margin: 5px 0;
+    width: 100%;
+    background: #333;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #555;
+}
+
+.container {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    height: 100vh;
+}
+
+.sidebar {
+    background: #1a1a1a;
+    padding: 15px;
+}
+
+.content {
+    padding: 20px;
+}
+
+.log, .clues {
+    background: #0f0f0f;
+    padding: 15px;
+    border: 1px solid #444;
+    margin-top: 15px;
+}
+
+select {
+    width: 100%;
+    padding: 8px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- START SCREEN -->
+<div id="start" class="screen active">
+    <h1>🕵️ Detective Game</h1>
+    <p>A diamond vanished at 9:00 PM. Find the thief.</p>
+    <button onclick="startGame()">Start Investigation</button>
+</div>
+
+<!-- GAME SCREEN -->
+<div id="game" class="screen">
+    <div class="container">
+        <div class="sidebar">
+            <button onclick="question()">Question</button>
+            <button onclick="research()">Research</button>
+            <button onclick="call()">Call</button>
+            <button onclick="accuse()">Accuse</button>
+
+            <h3>Suspect</h3>
+            <select id="suspect">
+                <option value="butler">James – Butler</option>
+                <option value="heir">Victoria – Heir</option>
+                <option value="dealer">Marcus – Dealer</option>
+            </select>
+        </div>
+
+        <div class="content">
+            <h2>Case Log</h2>
+            <div class="log" id="log">
+                Investigation started.
+            </div>
+
+            <h3>Clues</h3>
+            <div class="clues">
+                <ul id="clues"></ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const suspects = {
+    butler: {
+        question: "I heard someone near the vault.",
+        research: "Former thief, knows security systems.",
+        call: "Mentions the diamond without being asked.",
+        guilty: true
+    },
+    heir: {
+        question: "Why would I steal my own family jewel?",
+        research: "Deep gambling debt.",
+        call: "Angry and defensive.",
+        guilty: false
+    },
+    dealer: {
+        question: "I only appraise art.",
+        research: "Connected to black market buyers.",
+        call: "Too calm.",
+        guilty: false
+    }
+};
+
+const clues = new Set();
+
+function startGame() {
+    document.getElementById("start").classList.remove("active");
+    document.getElementById("game").classList.add("active");
+}
+
+function getSuspect() {
+    return document.getElementById("suspect").value;
+}
+
+function log(text) {
+    document.getElementById("log").innerText = text;
+}
+
+function addClue(text) {
+    if (!clues.has(text)) {
+        clues.add(text);
+        const li = document.createElement("li");
+        li.textContent = text;
+        document.getElementById("clues").appendChild(li);
+    }
+}
+
+function question() {
+    const s = suspects[getSuspect()];
+    log("Questioning suspect:\n" + s.question);
+    addClue(s.question);
+}
+
+function research() {
+    const s = suspects[getSuspect()];
+    log("Research result:\n" + s.research);
+    addClue(s.research);
+}
+
+function call() {
+    const s = suspects[getSuspect()];
+    log("Phone call:\n" + s.call);
+    addClue(s.call);
+}
+
+function accuse() {
+    const s = suspects[getSuspect()];
+    if (s.guilty) {
+        log("✅ Correct! You solved the case.");
+    } else {
+        log("❌ Wrong suspect. The criminal escaped.");
+    }
+}
+</script>
+
+</body>
+</html>
